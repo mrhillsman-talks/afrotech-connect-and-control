@@ -1,0 +1,29 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+.env
+
+node_modules
+agent-ui
+
+.idea
+local-infra
+pico/nodered/.npm
+pico/nodered/node_modules
+
+images/
+
+pico/
+agent-types/
+
+mcp_demos.db
+mcp_demos.py
+.env.simple.reflex
