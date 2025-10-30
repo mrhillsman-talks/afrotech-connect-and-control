@@ -1,23 +1,22 @@
 import asyncio
 import os
+
 from agno.agent import Agent
 from agno.knowledge import Knowledge
-from agno.models.groq import Groq
+from agno.knowledge.embedder.google import GeminiEmbedder
+from agno.knowledge.reader.pdf_reader import PDFReader
 from agno.models.google import Gemini
-#from agno.models.vllm import VLLM
+from agno.models.groq import Groq
+from agno.models.message import Message
 from agno.os import AgentOS
-from agno.tools.github import GithubTools
-#from agno.tools.mcp import MCPTools
+from agno.vectordb.lancedb import LanceDb
 from agno.vectordb.search import SearchType
+
 from dotenv import load_dotenv
 
-from agno.vectordb.lancedb import LanceDb
-from agno.knowledge.reader.pdf_reader import PDFReader
-from agno.knowledge.embedder.google import GeminiEmbedder
-
-from agno.models.message import Message
 
 load_dotenv()
+
 
 # Demo: Blackbox
 agent_blackbox = Agent(
@@ -27,20 +26,9 @@ agent_blackbox = Agent(
     # you are actively in has some way of keeping track of your conversation.
     # This has been the source of hallucinations in times past because of
     # the context window getting filled with unrelated items
-    add_history_to_context=True
+    add_history_to_context=False
 )
 
-# agent_blackbox = Agent(
-#     name="blackbox",
-#     instructions=["You are a helpful assistant."],
-#     model=VLLM(id="gpt-oss", base_url="https://gpt-oss-gptoss.apps.gptoss.openshiftpartnerlabs.com/v1",
-#                enable_thinking=False),
-#     # Adding history to context is traditionally a thing to do so that the session
-#     # you are actively in has some way of keeping track of your conversation.
-#     # This has been the source of hallucinations in times past because of
-#     # the context window getting filled with unrelated items
-#     add_history_to_context=True,
-#     stream = False)
 
 # Demo: Prompt Engineering
 instructions = """
@@ -151,31 +139,11 @@ agent_rag = Agent(
     search_knowledge=False,
 )
 
-# Demo: Agents
-agent_agents = Agent(
-    name="agents",
-    instructions = [
-        "Use your tools to answer questions about the repo: mrhillsman/mcp-workshop",
-        "Do not create any issues or pull requests unless explicitly asked to do so",
-    ],
-    model=Gemini(id="gemini-2.5-flash", api_key=os.getenv("GEMINI_API_KEY")),
-    tools=[GithubTools()],
-    add_history_to_context=True,
-    debug_mode=True,
-)
-
-# Demo: Model Context Protocol
-# agent_mcp = Agent(
-#     name="mcp",
-#     model=Groq(id="openai/gpt-oss-20b", api_key=os.getenv("GROQ_API_KEY")),
-# )
 
 agent_os = AgentOS(agents=[
     agent_blackbox,
     agent_pe,
     agent_rag,
-    agent_agents,
-    # agent_mcp
 ])
 
 app = agent_os.get_app()
